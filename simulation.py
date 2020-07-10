@@ -101,15 +101,14 @@ class PretSimulator(Simulator) :
 		if self.avecDepenses :
 			self.nomVille, dpt, code = CsvUtilities.getInfosDeLaPoste(self.codePostal)
 			if self.nomVille == None or dpt == None or code == None :
-				print(self.nomVille == None, dpt == None, code == None )
 				print("Le code postal {} ne fait pas partie des données La Poste".format(self.codePostal))
-				raise
+				return False
 			self.TFC, self.TFD, self.TEOM, self.TH = CsvUtilities.getInfosTaxes(dpt, code)
 			if self.TFC == None or self.TFD == None or self.TEOM == None or self.TH == None : 
 				self.TFC, self.TFD, self.TEOM, self.TH = PretSimulator.checkVilleAvecCodePostalParticulier(self.nomVille)
 			if self.TFC == None or self.TFD == None or self.TEOM == None or self.TH == None : 
 				print("Le code postal {} ne correspond à aucune donnée fournie par l'État".format(self.codePostal))
-				raise
+				return False
 			self.THAnnuelle = self.prixLocatifMensuel / 2. / 1. * 12. * self.TH / 100.
 			self.TFCAnnuelle = self.prixLocatifMensuel / 2. / 2. * 12. * self.TFC / 100.
 			self.TFDAnnuelle = self.prixLocatifMensuel / 2. / 2. * 12. * self.TFD / 100.
@@ -171,6 +170,8 @@ class PretSimulator(Simulator) :
 
 		if self.avecDepenses :
 			self.nbAnneesPourRemboursementPret = int(math.ceil(self.prixTotal / self.enomomiesAnnuellesPropriete))
+
+		return True
 
 	def __repr__(self) :
 		msgs = []
@@ -250,19 +251,22 @@ def main() :
 		except :
 			ret = None
 
-	if ret == 1 :
-		simulation = MaxCapacitySimulator(configs)
-	elif ret == 2 :
-		simulation = PretSimulator(configs, False, False)
-	elif ret == 3 :
-		simulation = PretSimulator(configs, False, True)
-	elif ret == 4 :
-		simulation = PretSimulator(configs, True, False)
-	elif ret == 5  :
-		simulation = PretSimulator(configs, True, True)
+	try :
+		if ret == 1 :
+			simulation = MaxCapacitySimulator(configs)
+		elif ret == 2 :
+			simulation = PretSimulator(configs, False, False)
+		elif ret == 3 :
+			simulation = PretSimulator(configs, False, True)
+		elif ret == 4 :
+			simulation = PretSimulator(configs, True, False)
+		elif ret == 5  :
+			simulation = PretSimulator(configs, True, True)
+	except :
+		return
 
-	simulation.compute()
-	print(simulation)
+	if simulation.compute() :
+		print(simulation)
 	
 if __name__ == "__main__" :
 	main()
