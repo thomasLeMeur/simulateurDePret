@@ -1,0 +1,18 @@
+{
+    "Apport (euro)": 30000,
+    "Prix du bien (euro)": 300000,
+	"Frais de notaire (pourcent)" : 7.8,
+	"Taux de garantie (pourcent)": 1,
+    "Taux annuel du pret (pourcent)": 1.25,
+    "Nombre de mensualites par an": 12,
+	"Frais de gestion bancaire (euro)": 0,
+    "Salaire mensuel net avant impot (euro)": 4000,
+	"Taux annuel assurance emprunteur (pourcent)": 0.5,
+	"Assurance emprunteur degressive (true/false)": true,
+    "Nombre d'annees du pret" : 25,
+	"Charges annuelles de copropriete (euro)" : 0,
+	"Redevance tele annuelle (euro)" : 138,
+	"Code postal" : 75001,
+	"Prix locatif mensuel (euro)" : 1000,
+	"Mensualité maximale (euro)" : 2500
+}
