@@ -5,7 +5,7 @@ Ce simulateur permet de réaliser cinq simulations différentes sous Python3.
 
 ## Simulation de la capacité maximale de remboursement ##
 
-En France, le remboursement d'un prêt immobilier ne peut dépasser 33% de ses revenus nets avant impôts.
+En France, le remboursement d'un prêt immobilier ne peut dépasser un tiers de ses revenus nets avant impôts.
 
 Cette simulation prend donc en compte :
 - le salaire mensuel net avant impôts
@@ -14,7 +14,7 @@ Cette simulation prend donc en compte :
 - l'apport fourni
 
 Formules :
-- capacité = (revenusMensuel * 33 / 100) * nombreDeMensualités * nbAnnées + apport
+- capacité = (revenusMensuel / 3.) * nombreDeMensualités * nbAnnées + apport
 
 Sortie :
 - La capacité maximale de remboursement

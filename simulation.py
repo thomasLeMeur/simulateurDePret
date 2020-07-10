@@ -47,7 +47,7 @@ class MaxCapacitySimulator(Simulator) :
 		super().__init__(configs, [elem[0] for elem in parametres], [elem[1] for elem in parametres])
 
 	def compute(self) :
-		self.mensualiteMax = self.salaire * 33. / 100.
+		self.mensualiteMax = self.salaire / 3.
 		self.capaciteRemboursement = self.mensualiteMax * self.nbMensualitesParAn * self.nbAnnees + self.apport
 
 	def __repr__(self) :
@@ -123,7 +123,7 @@ class PretSimulator(Simulator) :
 
 		self.coutNotaire = self.prixDuBien * self.fraisNotaire / 100.
 		self.coutGarantie = self.prixDuBien * self.tauxGarantie / 100.
-		self.mensualiteMaximale = (self.salaire * self.nbMensualitesParAn) / 12. * 33. / 100.
+		self.mensualiteMaximale = (self.salaire * self.nbMensualitesParAn) / 12. / 3.
 		self.capitalEmprunte = (self.prixDuBien + self.coutGarantie + self.fraisGestion + self.coutNotaire) - self.apport
 
 		nbAnnees = 0
@@ -195,8 +195,9 @@ class PretSimulator(Simulator) :
 			msgs.append("  Montant annuel cumulé des dépenses additionnelles de location : {:.2f}€, soit {:.2f}€ par mois".format(self.depensesLocataireAnnuelles, self.depensesLocataireAnnuelles / 12.))		
 		
 		if self.avecAnnees and self.nbAnneesNecessaires != self.nbAnnees :
-			msgs.append("Pour un tel prêt, la mensualité nécessaire est de {:.2f}€, soit un salaire minimum de {:.2f}€".format(self.mensualite, self.mensualite / 33. * 100.))
-			msgs.append("Avec le salaire actuel, il faudrait {} ans pour remboursé ce prêt".format(self.nbAnneesNecessaires))
+			salaireSuffisant = self.salaire >= self.mensualite * 3.
+			msgs.append("Pour un tel prêt, la mensualité nécessaire est de {:.2f}€{}".format(self.mensualite + (0 if not self.avecAnnees else self.depensesAdditionnellesMensuelles), "" if salaireSuffisant else ", soit un salaire minimum de {:.2f}€".format(self.mensualite * 3.)))
+			msgs.append("Avec {}, il faudrait {} ans pour remboursé ce prêt".format("la mensualité maximale actuelle" if salaireSuffisant else "le salaire actuel", self.nbAnneesNecessaires))
 		else :
 			preMsgs = []
 			preMsgs.append("Détails des {} mensualités :".format(self.nbMensualites))
