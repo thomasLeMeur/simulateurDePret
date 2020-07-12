@@ -49,6 +49,7 @@ class MaxCapacitySimulator(Simulator) :
 	def compute(self) :
 		self.mensualiteMax = self.salaire / 3.
 		self.capaciteRemboursement = self.mensualiteMax * self.nbMensualitesParAn * self.nbAnnees + self.apport
+		return True
 
 	def __repr__(self) :
 		msgs = []
