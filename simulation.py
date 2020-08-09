@@ -83,7 +83,8 @@ class PretSimulator(Simulator) :
 			["redevanceTele", "la redevance télé"],									\
 			["mensualiteMax", "la mensualité maximale"],							\
 			["chargesCopro", "les charges de copropriété"],							\
-			["prixLocatifMensuel", "le prix locatif mensuel estimé"]
+			["prixLocatifMensuel", "le prix locatif mensuel estimé"],				\
+			["taxeHabitationNulle", "l'éxonération de la taxe d'habitation"]
 
 		super().__init__(configs, [elem[0] for elem in parametres], [elem[1] for elem in parametres])
 		self.avecDepenses = avecDepensesAdditionnelles
@@ -114,9 +115,9 @@ class PretSimulator(Simulator) :
 			self.TFCAnnuelle = self.prixLocatifMensuel / 2. / 2. * 12. * self.TFC / 100.
 			self.TFDAnnuelle = self.prixLocatifMensuel / 2. / 2. * 12. * self.TFD / 100.
 			self.TEOMAnnuelle = self.prixLocatifMensuel / 2. / 2. * 12. * self.TEOM / 100.
-			self.depensesAdditionnellesAnnuelles = self.THAnnuelle + self.TFCAnnuelle + self.TFDAnnuelle + self.TEOMAnnuelle + self.chargesCopro + self.redevanceTele
+			self.depensesAdditionnellesAnnuelles = (self.THAnnuelle if not self.taxeHabitationNulle else 0) + self.TFCAnnuelle + self.TFDAnnuelle + self.TEOMAnnuelle + self.chargesCopro + self.redevanceTele
 			self.depensesAdditionnellesMensuelles = self.depensesAdditionnellesAnnuelles / 12.
-			self.depensesLocataireAnnuelles = self.THAnnuelle + self.redevanceTele + self.prixLocatifMensuel * 12
+			self.depensesLocataireAnnuelles = (self.THAnnuelle if not self.taxeHabitationNulle else 0) + self.redevanceTele + self.prixLocatifMensuel * 12
 			self.depensesLocataireMensuelles = self.depensesLocataireAnnuelles / 12.
 			self.enomomiesAnnuellesPropriete = self.depensesLocataireAnnuelles - self.depensesAdditionnellesAnnuelles
 			self.enomomiesMensuellesPropriete = self.enomomiesAnnuellesPropriete / 12.
@@ -191,7 +192,7 @@ class PretSimulator(Simulator) :
 			msgs.append("Le bien, d'une valeur locative mensuelle estimée à {:.2f}€, se situe à {} ({})".format(self.prixLocatifMensuel, self.nomVille, self.codePostal))
 			msgs.append("  Redevance télé annuelle : {:.2f}€".format(self.redevanceTele))
 			msgs.append("  Charges annuelles de copropriété : {:.2f}€".format(self.chargesCopro))
-			msgs.append("  Montant annuel de la taxe d'habitation : {:.2f}€ ({:.2f}%)".format(self.THAnnuelle, self.TH))
+			msgs.append("  Montant annuel de la taxe d'habitation : {} {:.2f}€ ({:.2f}%)".format("" if not self.taxeHabitationNulle else "éxonéré, au lieu de", self.THAnnuelle, self.TH))
 			msgs.append("  Montant annuel des taxes foncières : {:.2f}€ (TFC:{:.2f}% + TFD:{:.2f}% + TEOM:{:.2f}%)".format(self.TFCAnnuelle + self.TFDAnnuelle + self.TEOMAnnuelle, self.TFC, self.TFD, self.TEOM))
 			msgs.append("  Montant annuel cumulé des dépenses additionnelles de propriété : {:.2f}€, soit {:.2f}€ par mois".format(self.depensesAdditionnellesAnnuelles, self.depensesAdditionnellesAnnuelles / 12.))		
 			msgs.append("  Montant annuel cumulé des dépenses additionnelles de location : {:.2f}€, soit {:.2f}€ par mois".format(self.depensesLocataireAnnuelles, self.depensesLocataireAnnuelles / 12.))		

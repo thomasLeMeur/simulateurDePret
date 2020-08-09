@@ -95,6 +95,7 @@ Ces dépenses correspondent à :
 - les charges de copropriété (montant annuel payé à la copropriété pour le bon fonctionnement de cette dernière (entretien, etc...))
 - la taxe d'habitation (taxe annuelle payée à la commune que l'on soit propriétaire ou locataire)
 	- pour savoir si vous en êtes éxonérés : https://www.impots.gouv.fr/portail/particulier/questions/suis-je-concerne-par-la-reforme-de-la-taxe-dhabitation
+	- NB : à ce jour, la taxe d'habitation devrait totalement disparaître pour la résidence principale en 2023
 - la contribution à l'audiovisuel public (taxe annuelle payée à l'état)
 	- pour savoir sa valeur actuelle ou si vous en êtes éxonérés : https://www.service-public.fr/particuliers/vosdroits/F88
 - les impôts fonciers (taxes annuelles payées à la commune, département, etc... si l'on est propriétaire) :
@@ -118,6 +119,7 @@ Cette simulation prend donc en compte :
 - les charges de copropriété
 - la redevance télé (138€ à ce jour)
 - le code postal du bien (pour calculer les autres dépenses additionnelles)
+- l'exoneration de la taxe d'habitation
 - le prix locatif mensuel estimé (pour en déduire la valeur locative cadastrale annuelle)
 - la mensualité maximale désirée
 

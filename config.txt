@@ -13,6 +13,7 @@
 	"Charges annuelles de copropriete (euro)" : 0,
 	"Redevance tele annuelle (euro)" : 138,
 	"Code postal" : 75001,
+	"Taxe d'habitation nulle (true/false)" : false,
 	"Prix locatif mensuel (euro)" : 1000,
 	"Mensualité maximale (euro)" : 2500
 }

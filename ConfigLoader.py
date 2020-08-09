@@ -19,6 +19,7 @@ class ConfigLoader :
 		self.prixLocatifMensuel = None
 		self.tauxAnnuelAssurance = None
 		self.assuranceDegressive = None
+		self.taxeHabitationNulle = None
 
 		FileUtilities.openFileAndApply("config.txt", lambda file : self.fromJson(file.read()))
 
@@ -43,6 +44,7 @@ class ConfigLoader :
 		setValueFromJson("prixLocatifMensuel", "Prix locatif mensuel (euro)", float)
 		setValueFromJson("salaire", "Salaire mensuel net avant impot (euro)", float)
 		setValueFromJson("chargesCopro", "Charges annuelles de copropriete (euro)", float)
+		setValueFromJson("taxeHabitationNulle", "Taxe d'habitation nulle (true/false)", bool)
 		setValueFromJson("tauxAnnuelAssurance", "Taux annuel assurance emprunteur (pourcent)", float)
-		setValueFromJson("assuranceDegressive", "Assurance emprunteur degressive (true/false)", float)
+		setValueFromJson("assuranceDegressive", "Assurance emprunteur degressive (true/false)", bool)
 
