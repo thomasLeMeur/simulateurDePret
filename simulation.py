@@ -42,12 +42,13 @@ class MaxCapacitySimulator(Simulator) :
 		["apport", "l'apport"], 									\
 		["salaire", "le salaire"],									\
 		["nbAnnees", "le nombre d'années"],							\
+		["tauxEndettement", "le taux d'enttement maximal"],			\
 		["nbMensualitesParAn", "le nombre de mensualités par an"]
 
 		super().__init__(configs, [elem[0] for elem in parametres], [elem[1] for elem in parametres])
 
 	def compute(self) :
-		self.mensualiteMax = self.salaire / 3.
+		self.mensualiteMax = self.salaire * self.tauxEndettement / 100
 		self.capaciteRemboursement = self.mensualiteMax * self.nbMensualitesParAn * self.nbAnnees + self.apport
 		return True
 
@@ -55,7 +56,7 @@ class MaxCapacitySimulator(Simulator) :
 		msgs = []
 		msgs.append("Emprunt sur {} ans".format(self.nbAnnees))
 		msgs.append("Salaire mensuel net avant impôts : {}€ sur {} mois".format(self.salaire, self.nbMensualitesParAn))
-		msgs.append("  Soit une mensualité maximale de {}€ (pour un endettement de 33%)".format(self.mensualiteMax))
+		msgs.append("  Soit une mensualité maximale de {}€ (pour un endettement de {}%)".format(self.mensualiteMax, self.tauxEndettement))
 		msgs.append("Apport : {}€".format(self.apport))
 		msgs.append("Capacité de remboursement maximal : {}€".format(self.capaciteRemboursement))
 		return "\n".join(msgs)
@@ -70,6 +71,7 @@ class PretSimulator(Simulator) :
 		["fraisGestion", "les frais de gestion"],									\
 		["fraisNotaire", "les frais de notaire"],									\
 		["tauxAnnuelPret", "le taux annuel du prêt"],								\
+		["tauxEndettement", "le taux d'enttement maximal"],							\
 		["tauxAnnuelAssurance", "le taux annuel de l'assurance"],					\
 		["nbMensualitesParAn", "le nombre  de mensualités par an"],					\
 		["assuranceDegressive", "le fait que l'assurance soit dégressive ou non"]
@@ -124,7 +126,7 @@ class PretSimulator(Simulator) :
 
 		self.coutNotaire = self.prixDuBien * self.fraisNotaire / 100.
 		self.coutGarantie = self.prixDuBien * self.tauxGarantie / 100.
-		self.mensualiteMaximale = (self.salaire * self.nbMensualitesParAn) / 12. / 3.
+		self.mensualiteMaximale = (self.salaire * self.nbMensualitesParAn) / 12. * self.tauxEndettement / 100
 		self.capitalEmprunte = (self.prixDuBien + self.coutGarantie + self.fraisGestion + self.coutNotaire) - self.apport
 
 		nbAnnees = 0
@@ -173,7 +175,7 @@ class PretSimulator(Simulator) :
 		if self.avecDepenses :
 			self.nbAnneesPourRemboursementPret = int(math.ceil(self.prixTotal / self.enomomiesAnnuellesPropriete))
 
-		return True
+		return nbAnnees <= self.nbAnnees if self.avecAnnees else True
 
 	def __repr__(self) :
 		msgs = []
@@ -184,7 +186,7 @@ class PretSimulator(Simulator) :
 		msgs.append("Apport : {:.2f}€".format(self.apport))
 		msgs.append("Capital emprunté : {:.2f}€".format(self.capitalEmprunte))
 		msgs.append("Salaire mensuel net avant impôts : {:.2f}€ sur {} mois".format(self.salaire, self.nbMensualitesParAn))
-		msgs.append("  Soit une mensualité maximale de {:.2f}€ (pour un endettement de 33%){}".format(self.mensualiteMaximale, "" if not self.avecDepenses else " face à un désir de {:.2f}€".format(self.mensualiteMax)))
+		msgs.append("  Soit une mensualité maximale de {:.2f}€ (pour un endettement de {}%){}".format(self.mensualiteMaximale, self.tauxEndettement, "" if not self.avecDepenses else " face à un désir de {:.2f}€".format(self.mensualiteMax)))
 		msgs.append("Taux annuel du prêt : {:.2f}%".format(self.tauxAnnuelPret))
 		msgs.append("Taux annuel de l'assurance{}dégressive: {:.2f}%".format(" " if self.assuranceDegressive else " non ", self.tauxAnnuelAssurance))
 		
@@ -198,8 +200,8 @@ class PretSimulator(Simulator) :
 			msgs.append("  Montant annuel cumulé des dépenses additionnelles de location : {:.2f}€, soit {:.2f}€ par mois".format(self.depensesLocataireAnnuelles, self.depensesLocataireAnnuelles / 12.))		
 		
 		if self.avecAnnees and self.nbAnneesNecessaires != self.nbAnnees :
-			salaireSuffisant = self.salaire >= self.mensualite * 3.
-			msgs.append("Pour un tel prêt, la mensualité nécessaire est de {:.2f}€{}".format(self.mensualite + (0 if not self.avecAnnees else self.depensesAdditionnellesMensuelles), "" if salaireSuffisant else ", soit un salaire minimum de {:.2f}€".format(self.mensualite * 3.)))
+			salaireSuffisant = self.salaire >= self.mensualite / self.tauxEndettement * 100
+			msgs.append("Pour un tel prêt, la mensualité nécessaire est de {:.2f}€{}".format(self.mensualite + (0 if not self.avecAnnees else self.depensesAdditionnellesMensuelles), "" if salaireSuffisant else ", soit un salaire minimum de {:.2f}€".format(self.mensualite / self.tauxEndettement * 100)))
 			msgs.append("Avec {}, il faudrait {} ans pour remboursé ce prêt".format("la mensualité maximale actuelle" if salaireSuffisant else "le salaire actuel", self.nbAnneesNecessaires))
 		else :
 			preMsgs = []
@@ -233,11 +235,45 @@ class PretSimulator(Simulator) :
 		
 		return "\n".join(msgs)
 
+class PretChecker:
+	def __init__(self, configs):
+		simulator = MaxCapacitySimulator(configs)
+		simulator.compute()
+
+		self.configs = configs
+		self.maxCapacity = simulator.capaciteRemboursement
+	
+	def compute(self):
+		mini = 0
+		maxi = self.maxCapacity
+		self.lastSuccess = None
+		while abs(mini - maxi) > 1:
+			print(mini, maxi)
+			self.configs.prixDuBien = round(mini + (maxi - mini) / 2, 2)
+			simulation = PretSimulator(self.configs, False, True)
+			if simulation.compute():
+				mini = self.configs.prixDuBien
+				self.lastSuccess = simulation
+			else:
+				maxi = self.configs.prixDuBien
+		return self.lastSuccess is not None
+
+	def __repr__(self):
+		msgs = []
+		if self.lastSuccess is None:
+			msgs.append("Vous ne pouvez rien acheter avec ce salaire")
+		else:
+			msgs.append("Vous pouvez acheter un bien à {}".format(self.lastSuccess.prixDuBien))
+			msgs.append("Voici le détail:")
+			msgs.extend(str(self.lastSuccess).split("\n"))
+		return "\n".join(msgs)
+
+
 def main() :
 	configs = ConfigLoader()
 
 	ret = None
-	while ret not in [1, 2, 3, 4, 5] :
+	while ret not in [1, 2, 3, 4, 5, 6] :
 		msgs = []
 		msgs.append("Quelle type de simulation voulez-vous lancer ? :")
 		msgs.append("1- Capacité maximale de remboursement")
@@ -245,6 +281,7 @@ def main() :
 		msgs.append("3- Mensualité nécessaire suivant un nombre d'années et un salaire")
 		msgs.append("4- Nombre d'années nécessaire suivant un salaire et des dépenses additionnelles")
 		msgs.append("5- Mensualité nécessaire suivant un nombre d'années, un salaire et des dépenses additionnelles")
+		msgs.append("6- Prix maximal d'un bien achetable suivant un salaire, un nombre d'années et un coût de prêt (intérêts, etc.)")
 		msgs.append("")
 
 		ret = input("\n".join(msgs))
@@ -264,11 +301,13 @@ def main() :
 			simulation = PretSimulator(configs, True, False)
 		elif ret == 5  :
 			simulation = PretSimulator(configs, True, True)
+		elif ret == 6  :
+			simulation = PretChecker(configs)
 	except :
 		return
 
-	if simulation.compute() :
-		print(simulation)
+	simulation.compute()
+	print(simulation)
 	
 if __name__ == "__main__" :
 	main()

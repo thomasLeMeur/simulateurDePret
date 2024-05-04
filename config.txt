@@ -15,5 +15,6 @@
 	"Code postal" : 75001,
 	"Taxe d'habitation nulle (true/false)" : false,
 	"Prix locatif mensuel (euro)" : 1000,
-	"Mensualité maximale (euro)" : 2500
+	"Mensualité maximale (euro)" : 2500,
+	"Taux d'endettement maximal (pourcent)": 33
 }

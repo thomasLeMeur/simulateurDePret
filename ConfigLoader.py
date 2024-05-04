@@ -15,6 +15,7 @@ class ConfigLoader :
 		self.mensualiteMax = None
 		self.redevanceTele = None
 		self.tauxAnnuelPret = None
+		self.tauxEndettement = None
 		self.nbMensualitesParAn = None
 		self.prixLocatifMensuel = None
 		self.tauxAnnuelAssurance = None
@@ -44,6 +45,7 @@ class ConfigLoader :
 		setValueFromJson("prixLocatifMensuel", "Prix locatif mensuel (euro)", float)
 		setValueFromJson("salaire", "Salaire mensuel net avant impot (euro)", float)
 		setValueFromJson("chargesCopro", "Charges annuelles de copropriete (euro)", float)
+		setValueFromJson("tauxEndettement", "Taux d'endettement maximal (pourcent)", float)
 		setValueFromJson("taxeHabitationNulle", "Taxe d'habitation nulle (true/false)", bool)
 		setValueFromJson("tauxAnnuelAssurance", "Taux annuel assurance emprunteur (pourcent)", float)
 		setValueFromJson("assuranceDegressive", "Assurance emprunteur degressive (true/false)", bool)
